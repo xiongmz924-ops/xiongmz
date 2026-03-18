@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>稽核规则配置 - 银行流水自动匹配Agent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM Plex Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                        secondary: '#3B82F6',
+                        background: '#F8FAFC',
+                        text: '#1E293B',
+                        cta: '#F97316'
+                    },
+                    fontFamily: {
+                        'ibm': ['IBM Plex Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .transition-all-300 {
+                transition: all 300ms ease-in-out;
+            }
+        }
+    </style>
+    <style>
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background text-text min-h-screen">
+    <!-- 侧边导航栏 -->
+    <aside class="w-64 bg-white shadow-md fixed left-0 top-0 bottom-0 overflow-y-auto z-50">
+        <div class="p-4 border-b border-gray-200">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-bank text-primary text-2xl"></i>
+                <h1 class="text-lg font-semibold text-primary">银行流水自动匹配Agent</h1>
+            </div>
+        </div>
+        <div class="p-4">
+            <h2 class="text-sm font-semibold text-gray-500 uppercase mb-4">Agent平台</h2>
+            <ul class="space-y-2">
+                <li>
+                    <a href="index.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-home w-5"></i>
+                        <span>首页</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="environment.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-cog w-5"></i>
+                        <span>环境配置</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="download.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-download w-5"></i>
+                        <span>自动下载流水</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="logs.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-history w-5"></i>
+                        <span>执行日志</span>
+                    </a>
+                </li>
+            </ul>
+
+            <h2 class="text-sm font-semibold text-gray-500 uppercase mt-8 mb-4">售楼系统-智能稽核</h2>
+            <ul class="space-y-2">
+                <li>
+                    <a href="rules.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg bg-blue-50 text-primary font-medium">
+                        <i class="fa fa-list-alt w-5"></i>
+                        <span>稽核规则配置</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="audit.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-search w-5"></i>
+                        <span>流水稽核工作台</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="audit-logs.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-file-text w-5"></i>
+                        <span>稽核日志</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="absolute bottom-4 left-0 right-0 px-4">
+            <div class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-blue-50">
+                <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
+                    <i class="fa fa-user"></i>
+                </div>
+                <div>
+                    <div class="text-sm font-medium">明源售楼系统</div>
+                    <div class="text-xs text-gray-600">已集成</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="ml-64 p-8">
+        <div class="max-w-7xl">
+            <!-- 页面标题 -->
+            <div class="mb-6">
+                <h2 class="text-2xl font-semibold">稽核规则配置</h2>
+            </div>
+
+            <!-- 标签页导航 -->
+            <div class="bg-white rounded-xl shadow-md mb-6">
+                <div class="border-b border-gray-200">
+                    <nav class="flex -mb-px">
+                        <button class="px-6 py-4 text-primary border-b-2 border-primary font-medium" id="tab-receivable">
+                            应收匹配规则
+                        </button>
+                        <button class="px-6 py-4 text-gray-600 hover:text-primary font-medium" id="tab-actual">
+                            实收匹配规则
+                        </button>
+                        <button class="px-6 py-4 text-gray-600 hover:text-primary font-medium" id="tab-filter">
+                            销售收入过滤规则
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- 标签页内容 -->
+                <div class="p-6">
+                    <!-- 应收匹配规则配置 -->
+                    <div id="content-receivable" class="tab-content">
+                        <div class="bg-blue-50 rounded-lg p-5">
+                            <h3 class="text-lg font-medium mb-4 text-primary">应收匹配规则配置</h3>
+                            
+                            <!-- 唯一匹配规则 -->
+                            <div class="mb-6">
+                                <h4 class="text-md font-medium mb-3 text-primary">唯一匹配规则</h4>
+                                <div class="bg-white rounded-lg p-4">
+                                    <table class="w-full">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 w-2/5">流水字段</th>
+                                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 w-2/5">售楼系统字段</th>
+                                                <th class="px-4 py-2 text-center text-sm font-medium text-gray-700 w-1/5">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-200">
+                                            <tr>
+                                                <td class="px-4 py-2">
+                                                    <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                                        <option>对方账户名称</option>
+                                                        <option>交易金额</option>
+                                                        <option>交易时间</option>
+                                                        <option>交易备注</option>
+                                                    </select>
+                                                </td>
+                                                <td class="px-4 py-2">
+                                                    <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                                        <option>买方名称</option>
+                                                        <option>应收金额</option>
+                                                        <option>应收日期</option>
+                                                        <option>合同编号</option>
+                                                    </select>
+                                                </td>
+                                                <td class="px-4 py-2 text-center">
+                                                    <button type="button" class="text-red-500 hover:text-red-700">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-4 py-2">
+                                                    <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                                        <option>对方账户名称</option>
+                                                        <option>交易金额</option>
+                                                        <option>交易时间</option>
+                                                        <option>交易备注</option>
+                                                    </select>
+                                                </td>
+                                                <td class="px-4 py-2">
+                                                    <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                                        <option>买方名称</option>
+                                                        <option>应收金额</option>
+                                                        <option>应收日期</option>
+                                                        <option>合同编号</option>
+                                                    </select>
+                                                </td>
+                                                <td class="px-4 py-2 text-center">
+                                                    <button type="button" class="text-red-500 hover:text-red-700">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <button type="button" class="mt-3 text-primary hover:underline text-sm">
+                                        <i class="fa fa-plus mr-1"></i> 添加映射
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 智能匹配规则 -->
+                            <div>
+                                <h4 class="text-md font-medium mb-3 text-primary">智能匹配规则</h4>
+                                <div class="bg-white rounded-lg p-4">
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">智能匹配Prompt</label>
+                                            <textarea class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary h-64">你是一名经验丰富的房地产财务人员，我给你的两个文件，"交易明细列表"是企业的银行流水，"销售数据"是企业的销售订单及应收明细。现在需要你判断银行流水是否属于购房订单的应收款。
+
+请根据以下信息，判断该笔流水是否可能为"代付"，并给出最可能匹配的订单。
+
+判断时请综合考虑：
+- 是否为购房收入
+- 付款人与购房人姓名关系（如同姓、常见家庭关系）
+- 金额是否与订单应收或剩余应收一致
+- 付款时间与订单签署、付款节点的时间关系
+- 历史付款记录中是否存在相同付款人
+
+请输出：
+按表格输出每一笔流水的所属订单的应付
+1. 包括交易流水号，对方账户名称，所属
+2.是否为销售收入流水：是、否
+3.最可能匹配的订单的交易序号、所属交易房间、所属买方姓名，所属应付款项
+4. 匹配置信度（0-100%）
+5. 判断理由（要点列表）
+6. 是否存在风险或不确定点</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="mt-6 bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all-300">
+                                保存规则
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 实收匹配规则配置 -->
+                    <div id="content-actual" class="tab-content hidden">
+                        <div class="bg-blue-50 rounded-lg p-5">
+                            <h3 class="text-lg font-medium mb-4 text-primary">实收匹配规则配置</h3>
+                            
+                            <!-- 唯一匹配规则 -->
+                            <div class="mb-6">
+                                <h4 class="text-md font-medium mb-3 text-primary">唯一匹配规则</h4>
+                                <div class="bg-white rounded-lg p-4">
+                                    <table class="w-full">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 w-2/5">流水字段</th>
+                                                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700 w-2/5">售楼系统字段</th>
+                                                <th class="px-4 py-2 text-center text-sm font-medium text-gray-700 w-1/5">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-200">
+                                            <tr>
+                                                <td class="px-4 py-2">
+                                                    <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                                        <option>对方账户名称</option>
+                                                        <option>交易金额</option>
+                                                        <option>交易时间</option>
+                                                        <option>交易备注</option>
+                                                    </select>
+                                                </td>
+                                                <td class="px-4 py-2">
+                                                    <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                                        <option>买方名称</option>
+                                                        <option>实收金额</option>
+                                                        <option>收款日期</option>
+                                                        <option>收款编号</option>
+                                                    </select>
+                                                </td>
+                                                <td class="px-4 py-2 text-center">
+                                                    <button type="button" class="text-red-500 hover:text-red-700">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-4 py-2">
+                                                    <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                                        <option>对方账户名称</option>
+                                                        <option>交易金额</option>
+                                                        <option>交易时间</option>
+                                                        <option>交易备注</option>
+                                                    </select>
+                                                </td>
+                                                <td class="px-4 py-2">
+                                                    <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                                                        <option>买方名称</option>
+                                                        <option>实收金额</option>
+                                                        <option>收款日期</option>
+                                                        <option>收款编号</option>
+                                                    </select>
+                                                </td>
+                                                <td class="px-4 py-2 text-center">
+                                                    <button type="button" class="text-red-500 hover:text-red-700">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <button type="button" class="mt-3 text-primary hover:underline text-sm">
+                                            <i class="fa fa-plus mr-1"></i> 添加映射
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 智能匹配规则 -->
+                            <div>
+                                <h4 class="text-md font-medium mb-3 text-primary">智能匹配规则</h4>
+                                <div class="bg-white rounded-lg p-4">
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">智能匹配Prompt</label>
+                                            <textarea class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary h-64">你是一名经验丰富的房地产财务人员，我给你的两个文件，"交易明细列表"是企业的银行流水，"销售数据"是企业的销售订单及应收明细。现在需要你判断银行流水是否属于购房订单的应收款。
+
+请根据以下信息，判断该笔流水是否可能为"代付"，并给出最可能匹配的订单。
+
+判断时请综合考虑：
+- 是否为购房收入
+- 付款人与购房人姓名关系（如同姓、常见家庭关系）
+- 金额是否与订单应收或剩余应收一致
+- 付款时间与订单签署、付款节点的时间关系
+- 历史付款记录中是否存在相同付款人
+
+请输出：
+按表格输出每一笔流水的所属订单的应付
+1. 包括交易流水号，对方账户名称，所属
+2.是否为销售收入流水：是、否
+3.最可能匹配的订单的交易序号、所属交易房间、所属买方姓名，所属应付款项
+4. 匹配置信度（0-100%）
+5. 判断理由（要点列表）
+6. 是否存在风险或不确定点</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="mt-6 bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all-300">
+                                保存规则
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 销售收入过滤规则配置 -->
+                    <div id="content-filter" class="tab-content hidden">
+                        <div class="bg-blue-50 rounded-lg p-5">
+                            <h3 class="text-lg font-medium mb-4 text-primary">销售收入过滤规则配置</h3>
+                            
+                            <!-- 智能匹配规则 -->
+                            <div>
+                                <h4 class="text-md font-medium mb-3 text-primary">智能匹配规则</h4>
+                                <div class="bg-white rounded-lg p-4">
+                                    <div class="space-y-3">
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-1">智能匹配Prompt</label>
+                                            <textarea class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary h-64" placeholder="请输入智能匹配提示词..."></textarea>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button type="button" class="mt-6 bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all-300">
+                                保存规则
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 标签页切换
+            const tabs = {
+                'tab-receivable': 'content-receivable',
+                'tab-actual': 'content-actual',
+                'tab-filter': 'content-filter'
+            };
+
+            Object.keys(tabs).forEach(tabId => {
+                document.getElementById(tabId).addEventListener('click', function() {
+                    // 移除所有标签页的激活状态
+                    Object.keys(tabs).forEach(id => {
+                        document.getElementById(id).classList.remove('text-primary', 'border-b-2', 'border-primary');
+                        document.getElementById(id).classList.add('text-gray-600');
+                    });
+
+                    // 隐藏所有内容
+                    Object.values(tabs).forEach(contentId => {
+                        document.getElementById(contentId).classList.add('hidden');
+                    });
+
+                    // 激活当前标签页
+                    this.classList.remove('text-gray-600');
+                    this.classList.add('text-primary', 'border-b-2', 'border-primary');
+
+                    // 显示对应内容
+                    document.getElementById(tabs[tabId]).classList.remove('hidden');
+                });
+            });
+        });
+    </script>
+</body>
+</html>

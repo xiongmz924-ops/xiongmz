@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>流水稽核工作台 - 银行流水自动匹配Agent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM Plex Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                        secondary: '#3B82F6',
+                        background: '#F8FAFC',
+                        text: '#1E293B',
+                        cta: '#F97316'
+                    },
+                    fontFamily: {
+                        'ibm': ['IBM Plex Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .transition-all-300 {
+                transition: all 300ms ease-in-out;
+            }
+        }
+    </style>
+    <style>
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background text-text min-h-screen">
+    <!-- 侧边导航栏 -->
+    <aside class="w-64 bg-white shadow-md fixed left-0 top-0 bottom-0 overflow-y-auto z-50">
+        <div class="p-4 border-b border-gray-200">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-bank text-primary text-2xl"></i>
+                <h1 class="text-lg font-semibold text-primary">银行流水自动匹配Agent</h1>
+            </div>
+        </div>
+        <div class="p-4">
+            <h2 class="text-sm font-semibold text-gray-500 uppercase mb-4">Agent平台</h2>
+            <ul class="space-y-2">
+                <li>
+                    <a href="index.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-home w-5"></i>
+                        <span>首页</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="environment.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-cog w-5"></i>
+                        <span>环境配置</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="download.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-download w-5"></i>
+                        <span>自动下载流水</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="logs.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-history w-5"></i>
+                        <span>执行日志</span>
+                    </a>
+                </li>
+            </ul>
+
+            <h2 class="text-sm font-semibold text-gray-500 uppercase mt-8 mb-4">售楼系统-智能稽核</h2>
+            <ul class="space-y-2">
+                <li>
+                    <a href="rules.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-list-alt w-5"></i>
+                        <span>稽核规则配置</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="audit.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg bg-blue-50 text-primary font-medium">
+                        <i class="fa fa-search w-5"></i>
+                        <span>流水稽核工作台</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="audit-logs.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-file-text w-5"></i>
+                        <span>稽核日志</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="absolute bottom-4 left-0 right-0 px-4">
+            <div class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-blue-50">
+                <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
+                    <i class="fa fa-user"></i>
+                </div>
+                <div>
+                    <div class="text-sm font-medium">明源售楼系统</div>
+                    <div class="text-xs text-gray-600">已集成</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="ml-64 p-8">
+        <div class="max-w-7xl">
+            <!-- 页面标题 -->
+            <div class="mb-6">
+                <h2 class="text-2xl font-semibold">流水稽核工作台</h2>
+            </div>
+
+            <!-- 筛选条件 -->
+            <div class="bg-white rounded-xl shadow-md p-6 mb-6">
+                <div class="flex flex-wrap gap-4 items-end">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">项目</label>
+                        <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary w-40">
+                            <option>全部项目</option>
+                            <option>建银花园项目</option>
+                            <option>工商城项目</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">流水日期</label>
+                        <div class="flex items-center space-x-2">
+                            <input type="date" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                            <span class="text-gray-500">至</span>
+                            <input type="date" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">对方账户名称</label>
+                        <input type="text" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary w-48" placeholder="模糊搜索...">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 稽核统计 -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white rounded-xl shadow-md p-4">
+                    <div class="text-sm text-gray-600 mb-1">总流水数</div>
+                    <div class="text-2xl font-semibold text-primary">1,245</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-4">
+                    <div class="text-sm text-gray-600 mb-1">未稽核</div>
+                    <div class="text-2xl font-semibold text-yellow-600">32</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-4">
+                    <div class="text-sm text-gray-600 mb-1">待确认</div>
+                    <div class="text-2xl font-semibold text-orange-600">18</div>
+                </div>
+                <div class="bg-white rounded-xl shadow-md p-4">
+                    <div class="text-sm text-gray-600 mb-1">已稽核</div>
+                    <div class="text-2xl font-semibold text-green-600">1,195</div>
+                </div>
+            </div>
+
+            <!-- 稽核台账 -->
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <!-- 自动稽核按钮 -->
+                <div class="mb-4">
+                    <button type="button" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-all-300">
+                        <i class="fa fa-magic mr-2"></i> 开始自动稽核
+                    </button>
+                </div>
+
+                <!-- 状态标签页 -->
+                <div class="border-b border-gray-200 mb-4">
+                    <nav class="flex -mb-px">
+                        <button class="px-6 py-3 text-primary border-b-2 border-primary font-medium text-sm" id="tab-all" onclick="switchTab('all')">
+                            全部
+                        </button>
+                        <button class="px-6 py-3 text-gray-600 hover:text-primary font-medium text-sm" id="tab-unaudited" onclick="switchTab('unaudited')">
+                            未稽核
+                        </button>
+                        <button class="px-6 py-3 text-gray-600 hover:text-primary font-medium text-sm" id="tab-pending" onclick="switchTab('pending')">
+                            待确认
+                        </button>
+                        <button class="px-6 py-3 text-gray-600 hover:text-primary font-medium text-sm" id="tab-audited" onclick="switchTab('audited')">
+                            已稽核
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- 全部标签页内容 -->
+                <div id="content-all" class="tab-content">
+                    <div class="overflow-x-auto">
+                        <table class="w-full bg-white rounded-lg overflow-hidden">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">交易流水号</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">对方账户名称</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">金额</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">状态</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">匹配的交易</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">所属买方姓名</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">所属应付款项</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">匹配置信度</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">判断理由</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">建议确认内容</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-4 py-3 text-sm">LS20260318001</td>
+                                    <td class="px-4 py-3 text-sm">张三</td>
+                                    <td class="px-4 py-3 text-sm font-medium">¥12,800.00</td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">待确认</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <a href="#" class="text-primary hover:underline">1号楼-101</a>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">张三</td>
+                                    <td class="px-4 py-3 text-sm">应收-首付款</td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <span class="text-green-600 font-medium">95%</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">金额匹配，户名一致</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">确认匹配到合同HT2026001</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 text-sm">LS20260318002</td>
+                                    <td class="px-4 py-3 text-sm">李四</td>
+                                    <td class="px-4 py-3 text-sm font-medium">¥8,500.00</td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">未稽核</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">-</td>
+                                    <td class="px-4 py-3 text-sm">-</td>
+                                    <td class="px-4 py-3 text-sm">-</td>
+                                    <td class="px-4 py-3 text-sm">-</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">待稽核</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">-</td>
+                                </tr>
+                                <tr>
+                                    <td class="px-4 py-3 text-sm">LS20260317001</td>
+                                    <td class="px-4 py-3 text-sm">王五</td>
+                                    <td class="px-4 py-3 text-sm font-medium">¥15,200.00</td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">已稽核</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <a href="#" class="text-primary hover:underline">2号楼-201</a>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">王五</td>
+                                    <td class="px-4 py-3 text-sm">实收-定金</td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <span class="text-green-600 font-medium">98%</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">金额、户名、时间均匹配</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">已确认</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- 分页 -->
+                    <div class="flex justify-between items-center mt-6">
+                        <div class="text-sm text-gray-600">显示 1-3 条，共 32 条</div>
+                        <div class="flex space-x-1">
+                            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50 disabled:opacity-50" disabled>
+                                <i class="fa fa-chevron-left"></i>
+                            </button>
+                            <button class="px-3 py-1 border border-primary bg-primary text-white rounded-md text-sm">1</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50">2</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50">3</button>
+                            <button class="px-3 py-1 border border-gray-300 rounded-md text-sm hover:bg-gray-50">
+                                <i class="fa fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 未稽核标签页内容 -->
+                <div id="content-unaudited" class="tab-content hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full bg-white rounded-lg overflow-hidden">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">交易流水号</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">对方账户名称</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">金额</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">状态</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">匹配的交易</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">所属买方姓名</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">所属应付款项</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">匹配置信度</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">判断理由</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">建议确认内容</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-4 py-3 text-sm">LS20260318002</td>
+                                    <td class="px-4 py-3 text-sm">李四</td>
+                                    <td class="px-4 py-3 text-sm font-medium">¥8,500.00</td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">未稽核</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">-</td>
+                                    <td class="px-4 py-3 text-sm">-</td>
+                                    <td class="px-4 py-3 text-sm">-</td>
+                                    <td class="px-4 py-3 text-sm">-</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">待稽核</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">-</td>
+                                    <td class="px-4 py-3">
+                                        <button class="text-primary hover:underline text-sm" onclick="openManualMatch()">手工匹配</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 待确认标签页内容 -->
+                <div id="content-pending" class="tab-content hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full bg-white rounded-lg overflow-hidden">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">交易流水号</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">对方账户名称</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">金额</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">状态</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">匹配的交易</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">所属买方姓名</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">所属应付款项</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">匹配置信度</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">判断理由</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">建议确认内容</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-4 py-3 text-sm">LS20260318001</td>
+                                    <td class="px-4 py-3 text-sm">张三</td>
+                                    <td class="px-4 py-3 text-sm font-medium">¥12,800.00</td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">待确认</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <a href="#" class="text-primary hover:underline">1号楼-101</a>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">张三</td>
+                                    <td class="px-4 py-3 text-sm">应收-首付款</td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <span class="text-green-600 font-medium">95%</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">金额匹配，户名一致</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">确认匹配到合同HT2026001</td>
+                                    <td class="px-4 py-3">
+                                        <button class="text-primary hover:underline text-sm" onclick="openManualMatch()">手工匹配</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 已稽核标签页内容 -->
+                <div id="content-audited" class="tab-content hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full bg-white rounded-lg overflow-hidden">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">交易流水号</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">对方账户名称</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">金额</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">状态</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">匹配的交易</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">所属买方姓名</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">所属应付款项</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">匹配置信度</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">判断理由</th>
+                                    <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">建议确认内容</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-200">
+                                <tr>
+                                    <td class="px-4 py-3 text-sm">LS20260317001</td>
+                                    <td class="px-4 py-3 text-sm">王五</td>
+                                    <td class="px-4 py-3 text-sm font-medium">¥15,200.00</td>
+                                    <td class="px-4 py-3">
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">已稽核</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <a href="#" class="text-primary hover:underline">2号楼-201</a>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm">王五</td>
+                                    <td class="px-4 py-3 text-sm">实收-定金</td>
+                                    <td class="px-4 py-3 text-sm">
+                                        <span class="text-green-600 font-medium">98%</span>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">金额、户名、时间均匹配</td>
+                                    <td class="px-4 py-3 text-sm text-gray-600">已确认</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 手工匹配模态框 -->
+    <div id="manualMatchModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-xl p-6 max-w-2xl w-full">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-semibold">手工匹配</h3>
+                <button id="closeModal" class="text-gray-500 hover:text-gray-700">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="space-y-4">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <h4 class="font-medium mb-2">流水信息</h4>
+                    <div class="grid grid-cols-2 gap-2 text-sm">
+                        <div><span class="text-gray-600">流水号:</span> LS20260318002</div>
+                        <div><span class="text-gray-600">日期:</span> 2026-03-18</div>
+                        <div><span class="text-gray-600">金额:</span> ¥8,500.00</div>
+                        <div><span class="text-gray-600">来源:</span> 中国工商银行</div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">选择匹配类型</label>
+                    <select class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary">
+                        <option>应收匹配</option>
+                        <option>实收匹配</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">搜索匹配项</label>
+                    <input type="text" class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary" placeholder="输入合同号、客户姓名等...">
+                </div>
+                <div class="max-h-60 overflow-y-auto">
+                    <div class="space-y-2">
+                        <div class="border border-gray-200 rounded-lg p-3 hover:bg-blue-50 cursor-pointer">
+                            <div class="font-medium">合同号: HT2026003</div>
+                            <div class="text-sm text-gray-600">客户: 王五 | 金额: ¥8,500.00</div>
+                        </div>
+                        <div class="border border-gray-200 rounded-lg p-3 hover:bg-blue-50 cursor-pointer">
+                            <div class="font-medium">合同号: HT2026004</div>
+                            <div class="text-sm text-gray-600">客户: 赵六 | 金额: ¥8,000.00</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button id="cancelMatch" class="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50">
+                        取消
+                    </button>
+                    <button class="px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-700">
+                        确认匹配
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 标签页切换功能
+        function switchTab(tabName) {
+            // 移除所有标签页的激活状态
+            const tabs = ['tab-all', 'tab-unaudited', 'tab-pending', 'tab-audited'];
+            tabs.forEach(tabId => {
+                document.getElementById(tabId).classList.remove('text-primary', 'border-b-2', 'border-primary');
+                document.getElementById(tabId).classList.add('text-gray-600');
+            });
+
+            // 隐藏所有内容
+            const contents = ['content-all', 'content-unaudited', 'content-pending', 'content-audited'];
+            contents.forEach(contentId => {
+                document.getElementById(contentId).classList.add('hidden');
+            });
+
+            // 激活当前标签页
+            document.getElementById('tab-' + tabName).classList.remove('text-gray-600');
+            document.getElementById('tab-' + tabName).classList.add('text-primary', 'border-b-2', 'border-primary');
+
+            // 显示对应内容
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+        }
+
+        // 打开手工匹配模态框
+        function openManualMatch() {
+            const modal = document.getElementById('manualMatchModal');
+            modal.classList.remove('hidden');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const modal = document.getElementById('manualMatchModal');
+            const closeModal = document.getElementById('closeModal');
+            const cancelMatch = document.getElementById('cancelMatch');
+
+            // 关闭模态框
+            function closeModalFunc() {
+                modal.classList.add('hidden');
+            }
+
+            closeModal.addEventListener('click', closeModalFunc);
+            cancelMatch.addEventListener('click', closeModalFunc);
+
+            // 点击模态框外部关闭
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModalFunc();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

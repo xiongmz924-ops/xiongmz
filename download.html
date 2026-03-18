@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自动下载流水 - 银行流水自动匹配Agent</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM Plex Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563EB',
+                        secondary: '#3B82F6',
+                        background: '#F8FAFC',
+                        text: '#1E293B',
+                        cta: '#F97316'
+                    },
+                    fontFamily: {
+                        'ibm': ['IBM Plex Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .transition-all-300 {
+                transition: all 300ms ease-in-out;
+            }
+        }
+    </style>
+    <style>
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+        }
+    </style>
+</head>
+<body class="bg-background text-text min-h-screen">
+    <!-- 侧边导航栏 -->
+    <aside class="w-64 bg-white shadow-md fixed left-0 top-0 bottom-0 overflow-y-auto z-50">
+        <div class="p-4 border-b border-gray-200">
+            <div class="flex items-center space-x-2">
+                <i class="fa fa-bank text-primary text-2xl"></i>
+                <h1 class="text-lg font-semibold text-primary">银行流水自动匹配Agent</h1>
+            </div>
+        </div>
+        <div class="p-4">
+            <h2 class="text-sm font-semibold text-gray-500 uppercase mb-4">Agent平台</h2>
+            <ul class="space-y-2">
+                <li>
+                    <a href="index.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-home w-5"></i>
+                        <span>首页</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="environment.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-cog w-5"></i>
+                        <span>环境配置</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="download.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg bg-blue-50 text-primary font-medium">
+                        <i class="fa fa-download w-5"></i>
+                        <span>自动下载流水</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="logs.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-history w-5"></i>
+                        <span>执行日志</span>
+                    </a>
+                </li>
+            </ul>
+
+            <h2 class="text-sm font-semibold text-gray-500 uppercase mt-8 mb-4">售楼系统-智能稽核</h2>
+            <ul class="space-y-2">
+                <li>
+                    <a href="rules.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-list-alt w-5"></i>
+                        <span>稽核规则配置</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="audit.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-search w-5"></i>
+                        <span>流水稽核工作台</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="audit-logs.html" class="flex items-center space-x-3 px-4 py-2 rounded-lg hover:bg-blue-50 text-gray-700">
+                        <i class="fa fa-file-text w-5"></i>
+                        <span>稽核日志</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="absolute bottom-4 left-0 right-0 px-4">
+            <div class="flex items-center space-x-3 px-4 py-3 rounded-lg bg-blue-50">
+                <div class="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center">
+                    <i class="fa fa-user"></i>
+                </div>
+                <div>
+                    <div class="text-sm font-medium">明源售楼系统</div>
+                    <div class="text-xs text-gray-600">已集成</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- 主内容区 -->
+    <main class="ml-64 p-8">
+        <div class="max-w-7xl">
+            <!-- 页面标题 -->
+            <div class="mb-6">
+                <h2 class="text-2xl font-semibold">自动下载流水</h2>
+            </div>
+
+            <!-- 标签页导航 -->
+            <div class="bg-white rounded-xl shadow-md mb-6">
+                <div class="border-b border-gray-200">
+                    <nav class="flex -mb-px">
+                        <button class="px-6 py-4 text-primary border-b-2 border-primary font-medium" id="tab-script">
+                            脚本管理
+                        </button>
+                        <button class="px-6 py-4 text-gray-600 hover:text-primary font-medium" id="tab-task">
+                            下载任务
+                        </button>
+                        <button class="px-6 py-4 text-gray-600 hover:text-primary font-medium" id="tab-file">
+                            文件管理
+                        </button>
+                    </nav>
+                </div>
+
+                <!-- 标签页内容 -->
+                <div class="p-6">
+                    <!-- 脚本管理 -->
+                    <div id="content-script" class="tab-content">
+                        <div class="space-y-6">
+                            <!-- 脚本生成 -->
+                            <div class="bg-blue-50 rounded-lg p-5">
+                                <h3 class="text-lg font-medium mb-4 text-primary">脚本生成</h3>
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">输入自然语言</label>
+                                        <textarea class="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary h-32" placeholder="例如：创建一个脚本，用于下载建设银行的流水数据并解析成Excel格式"></textarea>
+                                    </div>
+                                    <div class="flex space-x-4">
+                                        <button type="button" class="bg-primary text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-all-300">
+                                            生成脚本
+                                        </button>
+                                        <button type="button" class="bg-secondary text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-all-300">
+                                            测试脚本
+                                        </button>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-1">生成的脚本</label>
+                                        <div class="bg-gray-900 text-gray-100 rounded-lg p-4 h-40 overflow-auto font-mono text-sm">
+                                            # 生成的脚本将显示在这里
+                                            # 例如:
+                                            # import requests
+                                            # def download_bank_statement():
+                                            #     print("下载建设银行流水")
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 脚本版本管理 -->
+                            <div class="bg-blue-50 rounded-lg p-5">
+                                <h3 class="text-lg font-medium mb-4 text-primary">脚本版本管理</h3>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full bg-white rounded-lg overflow-hidden">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">脚本名称</th>
+                                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">版本</th>
+                                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">创建时间</th>
+                                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">是否当前</th>
+                                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-200">
+                                            <tr>
+                                                <td class="px-4 py-3 text-sm">建设银行流水下载脚本</td>
+                                                <td class="px-4 py-3 text-sm">v1.0.0</td>
+                                                <td class="px-4 py-3 text-sm">2026-03-18 10:00</td>
+                                                <td class="px-4 py-3 text-sm">
+                                                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-1 rounded">是</span>
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    <div class="flex space-x-2">
+                                                        <button class="text-primary hover:underline text-sm">使用</button>
+                                                        <button class="text-red-500 hover:underline text-sm">删除</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-4 py-3 text-sm">建设银行流水下载脚本</td>
+                                                <td class="px-4 py-3 text-sm">v0.9.0</td>
+                                                <td class="px-4 py-3 text-sm">2026-03-17 15:30</td>
+                                                <td class="px-4 py-3 text-sm">
+                                                    <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-1 rounded">否</span>
+                                                </td>
+                                                <td class="px-4 py-3">
+                                                    <div class="flex space-x-2">
+                                                        <button class="text-primary hover:underline text-sm">使用</button>
+                                                        <button class="text-red-500 hover:underline text-sm">删除</button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 下载任务 -->
+                    <div id="content-task" class="tab-content hidden">
+                        <div class="bg-blue-50 rounded-lg p-5">
+                            <h3 class="text-lg font-medium mb-4 text-primary">自动化下载任务</h3>
+                            <div class="flex flex-wrap gap-4 mb-6">
+                                <button type="button" class="bg-primary text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-all-300">
+                                    <i class="fa fa-play mr-2"></i> 立即执行
+                                </button>
+                                <button type="button" class="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-300 transition-all-300">
+                                    <i class="fa fa-stop mr-2"></i> 停止任务
+                                </button>
+                            </div>
+
+                            <div class="bg-white rounded-lg p-4">
+                                <h4 class="font-medium mb-3">任务列表</h4>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full bg-white rounded-lg overflow-hidden">
+                                        <thead class="bg-gray-50">
+                                            <tr>
+                                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">银行&账号</th>
+                                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">任务状态</th>
+                                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">执行开始时间</th>
+                                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">执行结束时间</th>
+                                                <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">操作</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="divide-y divide-gray-200">
+                                            <tr>
+                                                <td class="px-4 py-3 text-sm">中国建设银行 (尾号8888)</td>
+                                                <td class="px-4 py-3">
+                                                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs">运行中</span>
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">2026-03-18 10:00:00</td>
+                                                <td class="px-4 py-3 text-sm">2026-03-18 10:05:30</td>
+                                                <td class="px-4 py-3">
+                                                    <button class="text-primary hover:underline text-sm">查看</button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="px-4 py-3 text-sm">中国工商银行 (尾号6666)</td>
+                                                <td class="px-4 py-3">
+                                                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs">运行中</span>
+                                                </td>
+                                                <td class="px-4 py-3 text-sm">2026-03-18 10:30:00</td>
+                                                <td class="px-4 py-3 text-sm">2026-03-18 10:35:45</td>
+                                                <td class="px-4 py-3">
+                                                    <button class="text-primary hover:underline text-sm">查看</button>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 文件管理 -->
+                    <div id="content-file" class="tab-content hidden">
+                        <div class="bg-blue-50 rounded-lg p-5">
+                            <h3 class="text-lg font-medium mb-4 text-primary">文件下载管理</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full bg-white rounded-lg overflow-hidden">
+                                    <thead class="bg-gray-50">
+                                        <tr>
+                                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">文件名</th>
+                                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">银行</th>
+                                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">下载时间</th>
+                                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">大小</th>
+                                            <th class="px-4 py-3 text-left text-sm font-medium text-gray-700">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-200">
+                                        <tr>
+                                            <td class="px-4 py-3">
+                                                <div class="font-medium">建设银行流水_20260318.xlsx</div>
+                                            </td>
+                                            <td class="px-4 py-3 text-sm">中国建设银行</td>
+                                            <td class="px-4 py-3 text-sm">2026-03-18 10:00</td>
+                                            <td class="px-4 py-3 text-sm">1.2 MB</td>
+                                            <td class="px-4 py-3">
+                                                <div class="flex space-x-2">
+                                                    <button class="text-primary hover:underline text-sm">预览</button>
+                                                    <button class="text-primary hover:underline text-sm">下载</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">
+                                                <div class="font-medium">工商银行流水_20260318.xlsx</div>
+                                            </td>
+                                            <td class="px-4 py-3 text-sm">中国工商银行</td>
+                                            <td class="px-4 py-3 text-sm">2026-03-18 10:05</td>
+                                            <td class="px-4 py-3 text-sm">856 KB</td>
+                                            <td class="px-4 py-3">
+                                                <div class="flex space-x-2">
+                                                    <button class="text-primary hover:underline text-sm">预览</button>
+                                                    <button class="text-primary hover:underline text-sm">下载</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="px-4 py-3">
+                                                <div class="font-medium">建设银行流水_20260317.xlsx</div>
+                                            </td>
+                                            <td class="px-4 py-3 text-sm">中国建设银行</td>
+                                            <td class="px-4 py-3 text-sm">2026-03-17 10:00</td>
+                                            <td class="px-4 py-3 text-sm">1.5 MB</td>
+                                            <td class="px-4 py-3">
+                                                <div class="flex space-x-2">
+                                                    <button class="text-primary hover:underline text-sm">预览</button>
+                                                    <button class="text-primary hover:underline text-sm">下载</button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 标签页切换
+            const tabs = {
+                'tab-script': 'content-script',
+                'tab-task': 'content-task',
+                'tab-file': 'content-file'
+            };
+
+            Object.keys(tabs).forEach(tabId => {
+                document.getElementById(tabId).addEventListener('click', function() {
+                    // 移除所有标签页的激活状态
+                    Object.keys(tabs).forEach(id => {
+                        document.getElementById(id).classList.remove('text-primary', 'border-b-2', 'border-primary');
+                        document.getElementById(id).classList.add('text-gray-600');
+                    });
+
+                    // 隐藏所有内容
+                    Object.values(tabs).forEach(contentId => {
+                        document.getElementById(contentId).classList.add('hidden');
+                    });
+
+                    // 激活当前标签页
+                    this.classList.remove('text-gray-600');
+                    this.classList.add('text-primary', 'border-b-2', 'border-primary');
+
+                    // 显示对应内容
+                    document.getElementById(tabs[tabId]).classList.remove('hidden');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
